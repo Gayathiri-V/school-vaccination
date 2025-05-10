@@ -223,7 +223,7 @@ function DashboardPage() {
             <Tooltip title="Number of students who have received at least one vaccination">
               <Card
                 sx={{
-                  background: 'linear-gradient(135deg, #f06292 0%, #f48fb1 100%)',
+                  background: 'linear-gradient(135deg,rgb(69, 173, 92) 0%,rgb(90, 184, 77) 100%)',
                   color: 'white',
                   borderRadius: 3,
                   boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
@@ -253,7 +253,7 @@ function DashboardPage() {
             <Tooltip title="Number of vaccination drives scheduled in the next 30 days">
               <Card
                 sx={{
-                  background: 'linear-gradient(135deg, #4caf50 0%, #81c784 100%)',
+                  background: 'linear-gradient(135deg,rgb(77, 170, 213) 0%,rgb(86, 254, 217) 100%)',
                   color: 'white',
                   borderRadius: 3,
                   boxShadow: '0 8px 24px rgba(0,0,0,0.2)',

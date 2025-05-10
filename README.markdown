@@ -103,3 +103,11 @@ cd school-vaccination
 ## Architecture Diagram
 
 ![alt text](architecture.png)
+
+
+
+## Default user credentials
+
+email: `admin@school.com`
+
+password: `admin123`
