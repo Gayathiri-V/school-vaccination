@@ -267,7 +267,7 @@ function DrivesPage() {
         {!loading && drives.length === 0 ? (
           <Typography>No upcoming drives</Typography>
         ) : (
-          <TableContainer sx={{ maxHeight: 400 }}>
+          <TableContainer>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>

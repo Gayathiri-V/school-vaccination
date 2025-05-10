@@ -45,9 +45,9 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
   );
 
   useEffect(() => {
-    if (open && driveId && vaccineId) {
-      fetchVaccinations();
-      fetchVaccineVaccinations();
+    if (open) {
+      driveId && fetchVaccinations();
+      vaccineId && fetchVaccineVaccinations();
     }
   }, [open, driveId, vaccineId]);
 
@@ -56,6 +56,7 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
     try {
       const response = await axios.get(`${api}/api/vaccinations/by-drive/${driveId}`);
       setVaccinations(response.data);
+      console.log(response.data)
       setError('');
     } catch (err) {
       setError('Failed to fetch vaccinations');
