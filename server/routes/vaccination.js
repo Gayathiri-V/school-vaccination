@@ -43,6 +43,25 @@ router.get('/by-drive/:driveId', async (req, res) => {
   }
 });
 
+// GET /api/vaccinations/by-vaccine/:vaccineId
+router.get('/by-vaccine/:vaccineId', async (req, res) => {
+  try {
+    const drives = await Drive.find({ vaccineId: req.params.vaccineId }).select('_id');
+    const driveIds = drives.map(drive => drive._id);
+    const vaccinations = await Vaccination.find({ driveId: { $in: driveIds } })
+      .populate('studentId', 'id name studentClass')
+      .populate({
+        path: 'driveId',
+        select: 'name date vaccineId',
+        populate: { path: 'vaccineId', select: 'name' },
+      });
+    res.json(vaccinations);
+  } catch (err) {
+    console.error('Error fetching vaccinations by vaccine:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // POST /api/vaccinations/create
 router.post('/create', async (req, res) => {
   try {
@@ -60,6 +79,17 @@ router.post('/create', async (req, res) => {
     const vaccinationCount = await Vaccination.countDocuments({ driveId });
     if (vaccinationCount >= drive.totalDoses) {
       return res.status(400).json({ message: 'No doses available for this drive' });
+    }
+    // Check if student has already received this vaccine
+    const vaccineId = drive.vaccineId;
+    const drivesWithSameVaccine = await Drive.find({ vaccineId }).select('_id');
+    const driveIds = drivesWithSameVaccine.map(d => d._id);
+    const existingVaccination = await Vaccination.findOne({
+      studentId,
+      driveId: { $in: driveIds },
+    });
+    if (existingVaccination) {
+      return res.status(400).json({ message: 'Student already vaccinated with this vaccine' });
     }
     const vaccination = new Vaccination({ studentId, driveId });
     await vaccination.save();

@@ -26,8 +26,9 @@ import { format } from 'date-fns';
 
 const api = process.env.REACT_APP_API_URL;
 
-function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applicableClasses, students }) {
+function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applicableClasses, students, vaccineId }) {
   const [vaccinations, setVaccinations] = useState([]);
+  const [vaccineVaccinations, setVaccineVaccinations] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [vaccinationCreateModalOpen, setVaccinationCreateModalOpen] = useState(false);
@@ -35,16 +36,20 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
   const [vaccinationFormData, setVaccinationFormData] = useState({ studentId: '' });
   const [deleteVaccinationId, setDeleteVaccinationId] = useState(null);
 
-  // Filter students based on applicableClasses
-  const filteredStudents = students.filter(student =>
-    applicableClasses.includes(student.studentClass)
+  // Filter students based on applicableClasses and exclude those vaccinated with this vaccine
+  const vaccinatedStudentIds = vaccineVaccinations.map(v => v.studentId?._id?.toString());
+  const filteredStudents = students.filter(
+    student =>
+      applicableClasses.includes(student.studentClass) &&
+      !vaccinatedStudentIds.includes(student._id.toString())
   );
 
   useEffect(() => {
-    if (open && driveId) {
+    if (open && driveId && vaccineId) {
       fetchVaccinations();
+      fetchVaccineVaccinations();
     }
-  }, [open, driveId]);
+  }, [open, driveId, vaccineId]);
 
   const fetchVaccinations = async () => {
     setLoading(true);
@@ -54,6 +59,19 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
       setError('');
     } catch (err) {
       setError('Failed to fetch vaccinations');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchVaccineVaccinations = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`${api}/api/vaccinations/by-vaccine/${vaccineId}`);
+      setVaccineVaccinations(response.data);
+      setError('');
+    } catch (err) {
+      setError('Failed to fetch vaccine vaccinations');
     } finally {
       setLoading(false);
     }
@@ -87,6 +105,7 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
       });
       setVaccinationCreateModalOpen(false);
       fetchVaccinations();
+      fetchVaccineVaccinations();
       setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create vaccination');
@@ -107,6 +126,7 @@ function VaccinationsModal({ open, onClose, driveId, driveName, enabled, applica
       setVaccinationDeleteModalOpen(false);
       setDeleteVaccinationId(null);
       fetchVaccinations();
+      fetchVaccineVaccinations();
       setError('');
     } catch (err) {
       setError('Failed to delete vaccination');
