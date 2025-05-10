@@ -51,6 +51,18 @@ router.post('/create', async (req, res) => {
     if (!name || !date || !vaccineId || totalDoses == null) {
       return res.status(400).json({ message: 'Name, date, vaccine, and total doses are required' });
     }
+
+    // Check if a drive exists on the same date
+    const inputDate = new Date(date);
+    const startOfDay = new Date(inputDate.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(inputDate.setHours(23, 59, 59, 999));
+    const existingDrive = await Drive.findOne({
+      date: { $gte: startOfDay, $lte: endOfDay },
+    });
+    if (existingDrive) {
+      return res.status(400).json({ message: 'A drive already exists on this date' });
+    }
+
     const drive = new Drive({
       name,
       date,

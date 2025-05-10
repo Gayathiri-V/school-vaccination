@@ -287,7 +287,7 @@ function DrivesPage() {
                     <TableCell>{drive.name}</TableCell>
                     <TableCell>{format(new Date(drive.date), 'yyyy-MM-dd')}</TableCell>
                     <TableCell>
-                      {vaccines.find((v) => v._id === drive.vaccineId)?._id ? drive.vaccineId.name : 'Unknown'}
+                      {vaccines.find((v) => v._id === drive.vaccineId)?._id ? drive.vaccineId.name : drive.vaccineId.name}
                     </TableCell>
                     <TableCell>{drive.availableDoses}</TableCell>
                     <TableCell>{drive.totalDoses}</TableCell>
